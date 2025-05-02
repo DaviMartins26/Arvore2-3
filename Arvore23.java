@@ -22,16 +22,15 @@ public class Arvore23 {
 
     private No raiz; // cria uma  referencia apenas
 
-    public void inserir(int elemento) {
-        No inserido = inserirNO(raiz, elemento);
-        if (inserido != null) {
+    public void inserir(int elemento) { // metodo chamado no Main
+        No inserido = inserirNO(raiz, elemento); 
+        if (inserido != null) { // garante que não passe um valor null
             raiz = inserido;
         }
     }
     
-
     private No inserirNO(No atual, int elemento) {
-        if (atual == null) {
+        if (atual == null) { // se não ouver No cria um
             return new No(elemento);
         }
     
@@ -48,7 +47,7 @@ public class Arvore23 {
                 atual.noDuplo = true;
                 return null;
             } else {
-                // O nó já tem 2 elementos e precisa ser dividido corretamente
+                // chama o metodo que divide um no de 3 elementos caso o No acabe ficando com 3 elementos
                 return dividir3Valores(atual.elemento1, atual.elemento2, elemento);
             }
         }
@@ -74,45 +73,53 @@ public class Arvore23 {
     -------------------------------------------Tratamentos---------------------------------------------------- 
     ---------------------------------------------------------------------------------------------------*/ 
 
-    // quando for necessario fazer 3 folhas
-    private No dividir3Valores(int a, int b, int c) {
+    // dividir No com 3 valores
+    private No dividir3Valores(int elemento1, int elemento2, int elementoInserido) {
         int menor, meio, maior;
     
-        // Ordenação manual de 3 inteiros
-        if (a < b && a < c) {
-            menor = a;
-            if (b < c) {
-                meio = b;
-                maior = c;
+        // verifica se elemento1 é o menor entre os três
+        if (elemento1 < elemento2 && elemento1 < elementoInserido) {
+            menor = elemento1; // seta menor como elemento1
+            // compara os outros dois e seta qual é o meio e maior
+            if (elemento2 < elementoInserido) {
+                meio = elemento2;
+                maior = elementoInserido;
             } else {
-                meio = c;
-                maior = b;
+                meio = elementoInserido;
+                maior = elemento2;
             }
-        } else if (b < a && b < c) {
-            menor = b;
-            if (a < c) {
-                meio = a;
-                maior = c;
+    
+        // cverifica se valor2 é o menor entre os três
+        } else if (elemento2 < elemento1 && elemento2 < elementoInserido) {
+            menor = elemento2;
+    
+            if (elemento1 < elementoInserido) {
+                meio = elemento1;
+                maior = elementoInserido;
             } else {
-                meio = c;
-                maior = a;
+                meio = elementoInserido;
+                maior = elemento1;
             }
+    
+
+        // se nenhum é o menor então o menor é o elementoInserido
         } else {
-            menor = c;
-            if (a < b) {
-                meio = a;
-                maior = b;
+            menor = elementoInserido;
+    
+            if (elemento1 < elemento2) {
+                meio = elemento1;
+                maior = elemento2;
             } else {
-                meio = b;
-                maior = a;
+                meio = elemento2;
+                maior = elemento1;
             }
         }
     
-        // Cria os filhos com os menores e maiores
+        // cria os dois nós com os valores menor e maior
         No esquerda = new No(menor);
         No direita = new No(maior);
     
-        // Cria o nó promovido com o valor do meio
+        // cria o NO promovido com o valor do meio e liga os filhos
         No promovido = new No(meio);
         promovido.esquerda = esquerda;
         promovido.direita = direita;
@@ -188,7 +195,7 @@ public class Arvore23 {
         direita.esquerda = filhoDireito;
         direita.meio = filhoExtra;
 
-        No novoPromovido = new No(meio);
+        No novoPromovido = new No(meio); // cria um No e e aponta esse po pros outros criados
         novoPromovido.esquerda = esquerda;
         novoPromovido.direita = direita;
 
@@ -204,49 +211,56 @@ public class Arvore23 {
         raiz = removerNo(raiz,elemento);
     }
 
-    private No removerNo(No no,int elemento){ // metodo que faz a remocao
-        if (no == null) return null; // verifica se o no não é null,importante
-
-        if(no.esquerda == null){ // se a esquerda não apontar pra nada
-            if(no.noDuplo){ // e se for noDuplo
-                if(elemento == no.elemento1){ // e elemento pra remover for igual o elemento do No
-                    no.elemento1 = no.elemento2; // o elemento1 do No fica igual ao elemento2
-                    no.noDuplo = false; // deixa de ser No duplo
-                } else if (elemento == no.elemento2){ // se o elemento a remover for igual o elemento2
-                    no.noDuplo = false;// deixa de ser No duplo
+    private No removerNo(No no, int elemento) { // metodo que remove verdadeiramente
+        if (no == null) return null;
+    
+        // Caso base: nó folha
+        if (no.esquerda == null) { // se aponta nada pra esquerda
+            if (no.noDuplo) { // e se for um no duplo
+                if (elemento == no.elemento1) {
+                    no.elemento1 = no.elemento2;
+                    no.noDuplo = false;
+                    return no;
+                } else if (elemento == no.elemento2) {
+                    no.noDuplo = false;
+                    return no;
                 }
-            } else if (elemento == no.elemento1){ 
-                return null;
+            } else if (elemento == no.elemento1) { 
+                return null; // remove nó simples
             }
-            return null;
-            }
-        // se elelmento pra ser removido for igual ao elemento1 do no ou o No é duplo e o elemento a ser removido é igual ao elemento2 do NO
-        if (elemento == no.elemento1 || (no.noDuplo && elemento == no.elemento2)){
-            if (elemento == no.elemento1){ // se o elemento pra remover for igual ao elemento1 do no
-                No sucessor = encontrarMenor(no.meio); // procuira o menor passando o valor do meio do no como paramentro
-                if (sucessor != null){ // garantindo um erro
-                    no.elemento1 = sucessor.elemento1; // // o elemento1 do NO fica igual ao elemento1 do sucessor
-                    no.meio = removerNo(no.meio, sucessor.elemento1); // chama o proprio metodo pra remover o elemento
+            return no; // valor não estava nesse nó
+        }
+    
+        // procura qual elemento do NO é correspondente ao elemento informado pra remover
+        if (elemento == no.elemento1 || elemento == no.elemento2) { 
+            if (elemento == no.elemento1) {
+                No sucessor = encontrarMenor(no.meio);
+                if (sucessor != null) {
+                    no.elemento1 = sucessor.elemento1;
+                    no.meio = removerNo(no.meio, sucessor.elemento1);
                 }
-            } else { // se elemento pra remover não for igual ao elemenmto1 do no
-                No sucessor = encontrarMenor(no.direita); // procuira o menor passando o valor direito do no como paramentro
-                if (sucessor != null){
+            } else { // se elemento pra remover for igual ao elemento2 do no
+                No sucessor = encontrarMenor(no.direita);
+                if (sucessor != null) {
                     no.elemento2 = sucessor.elemento1;
                     no.direita = removerNo(no.direita, sucessor.elemento1);
                 }
             }
-            return no; // retorna o No criado
+            return no;
         }
-        // se o elemento pra remover for menor que o elemento1 do No
-        if (elemento < no.elemento1){
-            no.esquerda = removerNo(no.esquerda, elemento); // chama novamente a função
-        } else if(!no.noDuplo || elemento < no.elemento2){
+    
+        // desce a arvore até o elemento
+        if (elemento < no.elemento1) {
+            no.esquerda = removerNo(no.esquerda, elemento);
+        } else if ( elemento < no.elemento2) {
             no.meio = removerNo(no.meio, elemento);
         } else {
             no.direita = removerNo(no.direita, elemento);
         }
-        return no;// retorna o no criado
+    
+        return no;
     }
+    
 
     // metodo pra procurar o menor valor
     private No encontrarMenor(No no){

@@ -16,12 +16,9 @@ public class Main {
         arvore.desenhar();
 
         System.out.println("\nRemovendo...\n");
-        arvore.remover(15);/* 
-        arvore.remover(18);
-        arvore.remover(7);
-        arvore.remover(20);
-        arvore.remover(1);
- */
-        arvore.desenhar();
+        //arvore.remover(5);
+        //arvore.desenhar();
+        //arvore.remover(6);
+        //arvore.desenhar();
     }
 }
