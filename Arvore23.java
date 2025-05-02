@@ -298,6 +298,35 @@ public class Arvore23 {
         System.out.println(texto);
     }
 
+        /* ---------------------------------------------------------------------------------------------------
+    -------------------------------------------BUSCAR ELEMENTO----------------------------------------------
+    ---------------------------------------------------------------------------------------------------*/ 
+
+
+    public boolean buscar(int elemento) { // metodoChamado no Main
+        return buscarElemento(raiz, elemento);
+    }
+
+    // vai retornar True pra caso o elemento exista no NO
+    private boolean buscarElemento(No no, int elemento) {
+        if (no == null) return false;
+    
+        // Verifica se o elemento está no nó atual
+        if (elemento == no.elemento1 || elemento == no.elemento2) {
+            return true;
+        }
+    
+        // Decide por qual caminho seguir
+        if (elemento < no.elemento1) {
+            return buscarElemento(no.esquerda, elemento);
+        } else if ( elemento < no.elemento2) {
+            return buscarElemento(no.meio, elemento);
+        } else {
+            return buscarElemento(no.direita, elemento);
+        }
+    }
+    
+    
 
 }
 

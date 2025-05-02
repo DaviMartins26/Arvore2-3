@@ -20,5 +20,8 @@ public class Main {
         //arvore.desenhar();
         //arvore.remover(6);
         //arvore.desenhar();
+
+        System.out.println("Buscar 15: " + arvore.buscar(15)); // Retonra se o elemento existe em boolean
+        System.out.println("Buscar 255: " + arvore.buscar(255));
     }
 }
