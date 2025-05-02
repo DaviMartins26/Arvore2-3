@@ -22,90 +22,119 @@ public class Arvore23 {
 
     private No raiz; // cria uma  referencia apenas
 
-    public void inserir(int elemento){ // metodo que é chamado pelo Main
-        No inserido = inserirNO(raiz,elemento);
-        if (inserido != null){ // se a promocao vou subindo ate a raiz precisa fazer uma nova raiz com esse if
-            No novaRaiz = new No(inserido.elemento1);
-            novaRaiz.noDuplo = false;
-            novaRaiz.esquerda = inserido.esquerda;
-            novaRaiz.direita = inserido.direita;
-            raiz = novaRaiz;
+    public void inserir(int elemento) {
+        No inserido = inserirNO(raiz, elemento);
+        if (inserido != null) {
+            raiz = inserido;
         }
     }
+    
 
-    private No inserirNO(No atual,int elemento){ // parte responsavel por colocar a No na arvore
-        if (atual == null){ // caso não haja nenhum No um Novo é inserido
+    private No inserirNO(No atual, int elemento) {
+        if (atual == null) {
             return new No(elemento);
         }
-        if (atual.esquerda == null){ // caso o NO atual não aponte nada pra esquerda
-            if (!atual.noDuplo){ // e nâo seje um No duplo
-                if(elemento < atual.elemento1){ // comprara se o elemento informado é menor que o elemento1 presente no No
-                    atual.elemento2 = atual.elemento1; // faz o elemento2 do no ser o elemento1
-                    atual.elemento1 = elemento; // e o elemento informado passa a ser o elemento1
-                } else { // se elemento informado maior que elemento1 do No
-                    atual.elemento2 =  elemento; //elemento informado passa a ser elemento2 do No
+    
+        // Caso seja uma folha
+        if (atual.esquerda == null) {
+            if (!atual.noDuplo) {
+                // Insere o novo elemento na posição correta dentro do nó
+                if (elemento < atual.elemento1) {
+                    atual.elemento2 = atual.elemento1;
+                    atual.elemento1 = elemento;
+                } else {
+                    atual.elemento2 = elemento;
                 }
-                atual.noDuplo = true; // agora o No é um No duplo
+                atual.noDuplo = true;
                 return null;
-            } else { // caso seja um No Duplo
-                return dividirFolha(atual,elemento); // chama o metodo que tenta balancear a arvore dividindo as folhas
+            } else {
+                // O nó já tem 2 elementos e precisa ser dividido corretamente
+                return dividir3Valores(atual.elemento1, atual.elemento2, elemento);
             }
         }
-
-        No promovido = null; // cria uma referencia de no para promover
-        if (elemento < atual.elemento1){ // se elemento informado for menor que elemento1 do No
-            promovido = inserirNO(atual.esquerda, elemento); // para um insert com No com o valor atual da esquerda e o da direira é o elemento inserido
-            // esses promovido != null é pra garantir que num valor null seja passadado no return, oq estava acontecendo
-            if (promovido != null) return tratarPromocao(atual,promovido, true); // chama o metodo que trata o balanceamento
-        } else if (!atual.noDuplo || elemento < atual.elemento2) { // Se não for noDuplo ou elemento inserido for menor que o elemento2
-            promovido = inserirNO(atual.meio, elemento); // pepara um insert com NO 
-            if (promovido != null) return tratarPromocao(atual,promovido,false); // chama o metodo que vai tratar o balanceamento
-        } else { // ultimo caso
+    
+        // Caso não seja folha — segue para o filho correto
+        No promovido = null;
+        if (elemento < atual.elemento1) {
+            promovido = inserirNO(atual.esquerda, elemento);
+            if (promovido != null) return tratarPromocao(atual, promovido, true);
+        } else if (!atual.noDuplo || elemento < atual.elemento2) {
+            promovido = inserirNO(atual.meio, elemento);
+            if (promovido != null) return tratarPromocao(atual, promovido, false);
+        } else {
             promovido = inserirNO(atual.direita, elemento);
-            if (promovido !=null) return tratarPromocao(atual,promovido,false); // chama o metodo que tenta balancear a arvore
+            if (promovido != null) return tratarPromocao(atual, promovido, false);
         }
-        return null; // quando não ha mais caminho a percorrer, acredito eu
+    
+        return null;
     }
+    
 
     /* ---------------------------------------------------------------------------------------------------
     -------------------------------------------Tratamentos---------------------------------------------------- 
     ---------------------------------------------------------------------------------------------------*/ 
 
     // quando for necessario fazer 3 folhas
-    private No dividirFolha(No atual, int elemento){
-        int menor, meio, maior; // variaveis temporarias pra manipulação
-        if (elemento < atual.elemento1){ // se o valor informado for menor que o elemento1
-            menor = elemento; // menor valor é o insert
-            meio = atual.elemento1; // o valor do meio é o elemento1
-            maior = atual.elemento2; // maior é o elemento2
-        }  else if (elemento < atual.elemento2){ // se o valor informado for menor que o elemento2
-            menor = atual.elemento1; // o elemento1 é o menor
-            meio = elemento; // meio é o insert
-            maior = atual.elemento2; // maior é o elemento2
-        } else { // se insert for maior que os 2
-            menor = atual.elemento1;
-            meio = atual.elemento2;
-            maior = elemento;
+    private No dividir3Valores(int a, int b, int c) {
+        int menor, meio, maior;
+    
+        // Ordenação manual de 3 inteiros
+        if (a < b && a < c) {
+            menor = a;
+            if (b < c) {
+                meio = b;
+                maior = c;
+            } else {
+                meio = c;
+                maior = b;
+            }
+        } else if (b < a && b < c) {
+            menor = b;
+            if (a < c) {
+                meio = a;
+                maior = c;
+            } else {
+                meio = c;
+                maior = a;
+            }
+        } else {
+            menor = c;
+            if (a < b) {
+                meio = a;
+                maior = b;
+            } else {
+                meio = b;
+                maior = a;
+            }
         }
-        // cria um No pra cada nova folha
-        No esquerda = new No(menor); // esquerda sempre é o Menor
-        No direita = new No(maior); // direita é sempre o Maior
-        No promovido = new No(meio); // o do meio 
-        // O no pronmovido do meio aponta para os dois novos filhos menor e maior
+    
+        // Cria os filhos com os menores e maiores
+        No esquerda = new No(menor);
+        No direita = new No(maior);
+    
+        // Cria o nó promovido com o valor do meio
+        No promovido = new No(meio);
         promovido.esquerda = esquerda;
         promovido.direita = direita;
-        return promovido; 
+    
+        return promovido;
     }
+    
+    
 
     // tentativa de balancear a arvore quando precisa subir um NO
     private No tratarPromocao(No atual,No promovido, boolean isEsquerda){
         if (!atual.noDuplo){ // se o No for simples
             if(isEsquerda) { // se o valor veio da esquerda
+                No antigoDireita = atual.direita; // salva o valor da direita
                 atual.elemento2 = atual.elemento1; // o elemento 2 se torna o 1
                 atual.elemento1 = promovido.elemento1; // elemento1 do no atual vira o elemento1 do no que vai ser promovido
                 atual.direita = atual.meio; // o elemento da direita vira igual ao valor do meio agora
                 atual.meio = promovido.direita; // o meio do atual aponta para o filho direito do promovido
-                atual.esquerda = promovido.esquerda; // o valor da esquerda se torna o valor da esquerda do promovido    
+                atual.esquerda = promovido.esquerda; // o valor da esquerda se torna o valor da esquerda do promovido 
+                if (atual.direita == null){ // faz a restauração da direita caso haja sobrescrição nula
+                    atual.direita = antigoDireita;
+                }   
             } else {
                 atual.elemento2 = promovido.elemento1; // o valor atual vira o valor do elemento1 do promovido
                 atual.meio= promovido.esquerda; // o valor do meio vira
@@ -240,12 +269,14 @@ public class Arvore23 {
     private void imprimir(No no, int nivel){
         if (no == null) return; // garantindo que n tente imprimir algo que n existe
 
+        if(no.direita != null) imprimir(no.direita, nivel+1); // se o No não for duplo e nem o elemento da direita for
+        if(no.meio != null) imprimir(no.meio, nivel+1); // se o no for duplo e no.meio for null
+
         String texto = no.noDuplo ? no.elemento1 + ","+ no.elemento2: String.valueOf(no.elemento1); // tem que ver se isso aqui pode
         imprimirEspacos(nivel,texto); // tentando imprimir aquele espaço que da efeito de arvore
 
         if(no.esquerda != null) imprimir(no.esquerda, nivel+1); // se aponta pra null na esquerda
-        if(no.noDuplo && no.meio != null) imprimir(no.meio, nivel+1); // se o no for duplo e no.meio for null
-        if(no.noDuplo && no.direita != null) imprimir(no.direita, nivel+1); // se o No não for duplo e nem o elemento da direita for
+
     }
 
     private void imprimirEspacos(int nivel,String texto){
