@@ -15,11 +15,12 @@ public class Main {
 
         arvore.desenhar();
 
-        System.out.println("\nRemovendo...\n");
-        //arvore.remover(5);
-        //arvore.desenhar();
-        //arvore.remover(6);
-        //arvore.desenhar();
+        System.out.println("\nRemovendo.5\n");
+        arvore.remover(5);
+        arvore.desenhar();
+        System.out.println("\nRemovendo.8\n");
+        arvore.remover(8);
+        arvore.desenhar();
 
         System.out.println("Buscar 15: " + arvore.buscar(15)); // Retonra se o elemento existe em boolean
         System.out.println("Buscar 255: " + arvore.buscar(255));

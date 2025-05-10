@@ -1,6 +1,5 @@
 public class Arvore23 {
 
-
     class No { // cria o No
         private int elemento1; 
         private int elemento2;
